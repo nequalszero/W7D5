@@ -1,4 +1,5 @@
-export const signup = (success, error, userInfo) => {
+export const signup = (userInfo, success, error) => {
+  debugger
   $.ajax({
     method: 'POST',
     url: 'api/users.json',

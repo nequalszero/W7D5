@@ -54,7 +54,7 @@
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _session_api_util = __webpack_require__(172);
+	var _session_actions = __webpack_require__(191);
 	
 	var _store = __webpack_require__(173);
 	
@@ -62,13 +62,13 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	window.signup = _session_api_util.signup;
-	window.login = _session_api_util.login;
-	window.logout = _session_api_util.logout;
+	window.signup = _session_actions.signup;
+	window.login = _session_actions.login;
+	window.logout = _session_actions.logout;
 	
 	document.addEventListener('DOMContentLoaded', function () {
 	  var store = (0, _store2.default)();
-	  window.store = store;
+	  window.store = store; // for testing only
 	  var rootEl = document.getElementById('root');
 	  _reactDom2.default.render(_react2.default.createElement(
 	    'h1',
@@ -21453,7 +21453,8 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var signup = exports.signup = function signup(success, error, userInfo) {
+	var signup = exports.signup = function signup(userInfo, success, error) {
+	  debugger;
 	  $.ajax({
 	    method: 'POST',
 	    url: 'api/users.json',
@@ -21498,12 +21499,16 @@
 	
 	var _root_reducer2 = _interopRequireDefault(_root_reducer);
 	
+	var _root_middleware = __webpack_require__(193);
+	
+	var _root_middleware2 = _interopRequireDefault(_root_middleware);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var configureStore = function configureStore() {
 	  var preloadedState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	
-	  return (0, _redux.createStore)(_root_reducer2.default, preloadedState);
+	  return (0, _redux.createStore)(_root_reducer2.default, preloadedState, _root_middleware2.default);
 	};
 	
 	exports.default = configureStore;
@@ -22442,6 +22447,8 @@
 	  var action = arguments[1];
 	
 	  Object.freeze(state);
+	
+	  debugger;
 	
 	  switch (action.type) {
 	    case _session_actions.RECEIVE_CURRENT_USER:
@@ -39496,6 +39503,76 @@
 	}.call(this));
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(182)(module)))
+
+/***/ },
+/* 193 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _redux = __webpack_require__(174);
+	
+	var _session_middleware = __webpack_require__(194);
+	
+	var _session_middleware2 = _interopRequireDefault(_session_middleware);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var RootMiddleware = (0, _redux.applyMiddleware)(_session_middleware2.default);
+	
+	exports.default = RootMiddleware;
+
+/***/ },
+/* 194 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _session_actions = __webpack_require__(191);
+	
+	var _session_api_util = __webpack_require__(172);
+	
+	exports.default = function (_ref) {
+	  var getState = _ref.getState,
+	      dispatch = _ref.dispatch;
+	  return function (next) {
+	    return function (action) {
+	      var successCallback = function successCallback(user) {
+	        return dispatch((0, _session_actions.receiveCurrentUser)(user));
+	      };
+	      var errorCallback = function errorCallback(error) {
+	        debugger;
+	        return dispatch((0, _session_actions.receiveErrors)(error.responseJSON));
+	      };
+	
+	      debugger;
+	
+	      switch (action.type) {
+	        case _session_actions.LOGIN:
+	          (0, _session_api_util.login)(successCallback, errorCallback, action.user);
+	          return next(action);
+	        case _session_actions.LOGOUT:
+	          (0, _session_api_util.logout)(function () {
+	            return next(action);
+	          });
+	          break;
+	        case _session_actions.SIGNUP:
+	          (0, _session_api_util.signup)(action.user, successCallback, errorCallback);
+	          return next(action);
+	        default:
+	          return next(action);
+	      }
+	    };
+	  };
+	};
 
 /***/ }
 /******/ ]);

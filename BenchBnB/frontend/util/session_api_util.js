@@ -1,5 +1,4 @@
 export const signup = (userInfo, success, error) => {
-  debugger
   $.ajax({
     method: 'POST',
     url: 'api/users.json',
@@ -9,7 +8,7 @@ export const signup = (userInfo, success, error) => {
   });
 };
 
-export const login = (success, error, userInfo) => {
+export const login = (userInfo, success, error) => {
   $.ajax({
     method: 'POST',
     url: 'api/session.json',

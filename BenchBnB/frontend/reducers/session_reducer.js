@@ -5,17 +5,16 @@ import { merge } from 'lodash';
 
 const _defaultState = {
   currentUser: null,
-  errors: ["Invalid credentials"]
+  errors: []
 };
 
 const SessionReducer = (state = _defaultState, action) => {
   Object.freeze(state);
 
-  debugger
-
   switch(action.type) {
     case (RECEIVE_CURRENT_USER):
-      let currentUser = action.currentUser;
+      let currentUser = { currentUser: action.currentUser };
+      debugger
       return merge({}, state, currentUser);
     case (RECEIVE_ERRORS):
       let errors = action.errors;
